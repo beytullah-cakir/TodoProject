@@ -1,0 +1,93 @@
+@model IEnumerable<TodoApp.Models.TodoItems>
+
+@{
+    ViewData["Title"] = "Görevlerim";
+}
+
+<div class="row justify-content-center">
+    <div class="col-lg-7 col-md-9">
+        
+        <!-- Header Card -->
+        <div class="glass-card header-card">
+            <h2 class="display-5 mb-2">Merhaba! 👋</h2>
+            <p class="lead mb-0 opacity-90">Bugün yapacaklarını planlamaya hazır mısın?</p>
+        </div>
+
+        <!-- Add Task Form -->
+        <div class="glass-card p-4 mb-4">
+            <form asp-action="Add" method="post">
+                <div class="row g-3">
+                    <div class="col-md-9">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold small text-muted text-uppercase mb-2">Yeni Görev</label>
+                            <input type="text" name="title" class="form-control form-control-lg" placeholder="Ne yapılması gerekiyor?" required />
+                        </div>
+                        <div>
+                            <input type="text" name="description" class="form-control" placeholder="Ek detaylar ekle (isteğe bağlı)..." />
+                        </div>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary btn-lg w-100 py-3">
+                            <i class="bi bi-plus-circle-fill me-2"></i> Ekle
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- Task List Container -->
+        <div class="task-list-container mb-5">
+            <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+                <h4 class="fw-bold mb-0">Aktif Görevler</h4>
+                <span class="badge bg-primary rounded-pill px-3 py-2">@Model.Count() Toplam</span>
+            </div>
+
+            <div class="task-list">
+                @if (!Model.Any())
+                {
+                    <div class="glass-card empty-state">
+                        <div class="empty-icon">
+                            <i class="bi bi-clipboard2-check"></i>
+                        </div>
+                        <h5 class="fw-bold text-dark">Henüz görev yok</h5>
+                        <p class="text-muted">Her şey kontrol altında. Yeni bir görev ekleyerek güne başla!</p>
+                    </div>
+                }
+                
+                @foreach (var item in Model)
+                {
+                    <div class="task-item @(item.isCompleted ? "completed" : "")">
+                        <div class="d-flex align-items-center">
+                            <form asp-action="ToggleDone" asp-route-id="@item.Id" method="post" class="me-4">
+                                <input type="checkbox" class="custom-checkbox"
+                                @(item.isCompleted ? "checked" : "")
+                                       onchange="this.form.submit()" />
+                            </form>
+                            
+                            <div>
+                                <h5 class="task-title mb-0">
+                                    @item.Title
+                                </h5>
+                                @if (!string.IsNullOrEmpty(item.Description))
+                                {
+                                    <div class="task-desc mt-1">
+                                        <i class="bi bi-info-circle me-1"></i> @item.Description
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        <div class="d-flex align-items-center">
+                            <a asp-action="Delete" asp-route-id="@item.Id"
+                               class="delete-btn"
+                               onclick="return confirm('Bu görevi silmek istediğine emin misin?')">
+                                <i class="bi bi-trash3-fill"></i>
+                            </a>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        
+    </div>
+</div>
